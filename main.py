@@ -1,12 +1,16 @@
-from flask import Flask, render_template
+import os
+
+from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap5
+from flask_login import UserMixin, LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+from werkzeug.security import generate_password_hash
 from wtforms import StringField, EmailField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 login_manager = LoginManager()
 login_manager.init_app(app)
 bootstrap = Bootstrap5(app)
@@ -17,14 +21,14 @@ db = SQLAlchemy(app)
 class sign_up(FlaskForm):
     name = StringField(validators=[DataRequired()])
     email = EmailField(validators=[DataRequired()])
-    passw = PasswordField(validators=[DataRequired()])
-    submit = SubmitField
+    password = PasswordField(validators=[DataRequired()])
+    submit = SubmitField(validators=[DataRequired()])
 
 
-class login(FlaskForm):
+class user_login(FlaskForm):
     email = EmailField(validators=[DataRequired()])
-    passw = PasswordField(validators=[DataRequired()])
-    submit = SubmitField
+    password = PasswordField(validators=[DataRequired()])
+    submit = SubmitField(validators=[DataRequired()])
 
 
 class User(UserMixin, db.Model):
@@ -42,6 +46,11 @@ class AcTasks(db.Model):
     tasks = db.Column(db.String(250))
 
 
+class DiTasks(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pass
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
@@ -52,9 +61,27 @@ def home():
     return render_template('index.html', logged=current_user)
 
 
+@app.route("/register", methods=['POST', 'GET'])
+def register():
+    form = sign_up()
+    if form.validate_on_submit():
+        new_user = User()
+        new_user.name = request.form['name']
+        new_user.email = request.form['email']
+        new_user.password = generate_password_hash(
+            password=request.form['password'],
+            method="pbkdf2:sha256",
+            salt_length=8
+        )
+        db.session.add(new_user)
+        db.session.commit()
+    render_template('register.html', form=form, logged=current_user)
+
+
 @app.route("/login")
 def login():
-    return render_template('login.html', form=login)
+    form = user_login()
+    return render_template('login.html', form=form)
 
 
 if __name__ == "__main__":
