@@ -1,8 +1,8 @@
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from flask_bootstrap import Bootstrap5
-from flask_login import UserMixin, LoginManager, current_user
+from flask_login import UserMixin, LoginManager, current_user, login_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash
@@ -16,6 +16,9 @@ login_manager.init_app(app)
 bootstrap = Bootstrap5(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///all.db"
 db = SQLAlchemy(app)
+
+with app.app_context():
+    db.create_all()
 
 
 class sign_up(FlaskForm):
@@ -34,21 +37,24 @@ class user_login(FlaskForm):
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250))
-    email = db.Column(db.String(250))
-    password = db.Column(db.String(250))
-    lists = db.relationship('active_tasks', back_populates="users")
+    name = db.Column(db.String(250), primary_key=False)
+    email = db.Column(db.String(250), primary_key=False)
+    password = db.Column(db.String(250), primary_key=False)
+    lists = db.relationship('AcTasks', back_populates="users")
 
 
 class AcTasks(db.Model):
     __tablename__ = "active_tasks"
     id = db.Column(db.Integer, primary_key=True)
-    tasks = db.Column(db.String(250))
+    tasks = db.Column(db.String(250), primary_key=False)
+    users = db.relationship('User', primary_key=False, back_populates="lists")
+    deactasks = db.relationship("DiTasks", back_populates="active_tasks")
 
 
 class DiTasks(db.Model):
+    __tablename__ = "disabled_tasks"
     id = db.Column(db.Integer, primary_key=True)
-    pass
+    tasks = db.Column(db.String(250), primary_key=False)
 
 
 @login_manager.user_loader
@@ -75,7 +81,9 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
-    render_template('register.html', form=form, logged=current_user)
+        login_user(new_user)
+        return redirect('/')
+    return render_template('register.html', form=form, logged=current_user)
 
 
 @app.route("/login")
