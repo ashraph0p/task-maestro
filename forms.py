@@ -16,6 +16,6 @@ class user_login(FlaskForm):
     submit = SubmitField(validators=[DataRequired()])
 
 
-class add_task(FlaskForm):
+class extra_task(FlaskForm):
     task = StringField(validators=[DataRequired()])
     submit = SubmitField(validators=[DataRequired()])

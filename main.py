@@ -2,11 +2,11 @@ import os
 
 from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_bootstrap import Bootstrap5
-from flask_login import UserMixin, LoginManager, current_user, login_user
+from flask_login import UserMixin, LoginManager, current_user, login_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from forms import user_login, sign_up
+from forms import user_login, sign_up, extra_task
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -60,7 +60,14 @@ def home():
 
 @app.route("/add")
 def add_task():
-    return render_template('add_task.html', logged=current_user)
+    form = extra_task()
+    if form.validate_on_submit():
+        task = form.task.data
+        new_tasks = AcTasks
+        new_tasks.tasks = task
+        db.session.add(new_tasks)
+        db.session.commit()
+    return render_template('add_task.html', logged=current_user, form=form)
 
 
 @app.route("/register", methods=['POST', 'GET'])
@@ -87,7 +94,7 @@ def login():
     form = user_login()
     if form.validate_on_submit():
         email = form.email.data
-        password = form.email.data
+        password = form.password.data
         new_user = User.query.filter_by(email=email).first()
         if not new_user:
             flash("This email doesn't exist")
@@ -99,6 +106,12 @@ def login():
             login_user(new_user)
             return redirect(url_for('home'))
     return render_template('login.html', form=form, logged=current_user)
+
+
+@app.route("/logout", methods=["POST", "GET"])
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 
 if __name__ == "__main__":
