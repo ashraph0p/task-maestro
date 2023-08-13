@@ -1,13 +1,12 @@
 import os
 
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_bootstrap import Bootstrap5
 from flask_login import UserMixin, LoginManager, current_user, login_user
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from werkzeug.security import generate_password_hash
-from wtforms import StringField, EmailField, PasswordField, SubmitField
-from wtforms.validators import DataRequired
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from forms import user_login, sign_up
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -17,22 +16,6 @@ bootstrap = Bootstrap5(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///all.db"
 db = SQLAlchemy(app)
 
-with app.app_context():
-    db.create_all()
-
-
-class sign_up(FlaskForm):
-    name = StringField(validators=[DataRequired()])
-    email = EmailField(validators=[DataRequired()])
-    password = PasswordField(validators=[DataRequired()])
-    submit = SubmitField(validators=[DataRequired()])
-
-
-class user_login(FlaskForm):
-    email = EmailField(validators=[DataRequired()])
-    password = PasswordField(validators=[DataRequired()])
-    submit = SubmitField(validators=[DataRequired()])
-
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
@@ -40,21 +23,28 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(250), primary_key=False)
     email = db.Column(db.String(250), primary_key=False)
     password = db.Column(db.String(250), primary_key=False)
-    lists = db.relationship('AcTasks', back_populates="users")
+    tasks = db.relationship('AcTasks', back_populates="users")
 
 
 class AcTasks(db.Model):
     __tablename__ = "active_tasks"
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     tasks = db.Column(db.String(250), primary_key=False)
-    users = db.relationship('User', primary_key=False, back_populates="lists")
-    deactasks = db.relationship("DiTasks", back_populates="active_tasks")
+    users = db.relationship('User', back_populates="tasks")
+    active_tasks = db.relationship("DiTasks", back_populates="disabled_tasks")
 
 
 class DiTasks(db.Model):
     __tablename__ = "disabled_tasks"
     id = db.Column(db.Integer, primary_key=True)
     tasks = db.Column(db.String(250), primary_key=False)
+    tasks_id = db.Column(db.Integer, db.ForeignKey('active_tasks.id'))
+    disabled_tasks = db.relationship("AcTasks", back_populates="active_tasks")
+
+
+with app.app_context():
+    db.create_all()
 
 
 @login_manager.user_loader
@@ -82,14 +72,27 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
-        return redirect('/')
+        return redirect(url_for('home'))
     return render_template('register.html', form=form, logged=current_user)
 
 
-@app.route("/login")
+@app.route("/login", methods=['POST', 'GET'])
 def login():
     form = user_login()
-    return render_template('login.html', form=form)
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.email.data
+        new_user = User.query.filter_by(email=email).first()
+        if not new_user:
+            flash("This email doesn't exist")
+            return redirect(url_for('login'))
+        elif not check_password_hash(new_user.password, password):
+            flash("Password incorrect, Please try again.")
+            return redirect(url_for('login'))
+        else:
+            login_user(new_user)
+            return redirect(url_for('home'))
+    return render_template('login.html', form=form, logged=current_user)
 
 
 if __name__ == "__main__":

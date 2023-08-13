@@ -33,6 +33,7 @@
             </div>
             <div class="offcanvas-body">
                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    {% if not logged.is_authenticated: %}
                     <li class="nav-item">
                         <a aria-current="page" class="nav-link active" href="/">Home</a>
                     </li>
@@ -42,6 +43,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/register">Register</a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
