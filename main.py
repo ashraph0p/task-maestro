@@ -32,7 +32,6 @@ class AcTasks(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     tasks = db.Column(db.String(250), primary_key=False)
     users = db.relationship('User', back_populates="tasks")
-    active_tasks = db.relationship("DiTasks", back_populates="disabled_tasks")
 
 
 class DiTasks(db.Model):
@@ -40,7 +39,8 @@ class DiTasks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tasks = db.Column(db.String(250), primary_key=False)
     tasks_id = db.Column(db.Integer, db.ForeignKey('active_tasks.id'))
-    disabled_tasks = db.relationship("AcTasks", back_populates="active_tasks")
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    users = db.relationship('User', back_populates="tasks")
 
 
 with app.app_context():
@@ -54,20 +54,27 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
-    thing = AcTasks.query.all()
-    return render_template('index.html', logged=current_user, data=thing)
+    return render_template('index.html', logged=current_user)
 
 
-@app.route("/add")
+@app.route("/add", methods=['POST', 'GET'])
 def add_task():
     form = extra_task()
     if form.validate_on_submit():
         task = form.task.data
-        new_tasks = AcTasks
+        new_tasks = AcTasks()
         new_tasks.tasks = task
+        new_tasks.user_id = current_user.get_id()
         db.session.add(new_tasks)
         db.session.commit()
     return render_template('add_task.html', logged=current_user, form=form)
+
+
+@app.route('/view')
+def view():
+    tasks = AcTasks.query.filter_by(user_id=current_user.get_id())
+    dis_tasks = DiTasks.query.filter_by(user_id=current_user.get_id())
+    return render_template('view_tasks.html', logged=current_user, tasks=tasks, dis_tasks=dis_tasks)
 
 
 @app.route("/register", methods=['POST', 'GET'])
