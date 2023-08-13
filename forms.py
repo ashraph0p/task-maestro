@@ -14,3 +14,8 @@ class user_login(FlaskForm):
     email = EmailField(validators=[DataRequired()])
     password = PasswordField(validators=[DataRequired()])
     submit = SubmitField(validators=[DataRequired()])
+
+
+class add_task(FlaskForm):
+    task = StringField(validators=[DataRequired()])
+    submit = SubmitField(validators=[DataRequired()])

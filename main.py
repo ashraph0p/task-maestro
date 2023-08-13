@@ -54,7 +54,13 @@ def load_user(user_id):
 
 @app.route("/")
 def home():
-    return render_template('index.html', logged=current_user)
+    thing = AcTasks.query.all()
+    return render_template('index.html', logged=current_user, data=thing)
+
+
+@app.route("/add")
+def add_task():
+    return render_template('add_task.html', logged=current_user)
 
 
 @app.route("/register", methods=['POST', 'GET'])
