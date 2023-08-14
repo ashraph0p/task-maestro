@@ -50,22 +50,26 @@ def home():
 
 @app.route("/add", methods=['POST', 'GET'])
 def add_task():
-    form = extra_task()
-    if form.validate_on_submit():
-        task = form.task.data
-        new_tasks = AcTasks()
-        new_tasks.tasks = task
-        new_tasks.user_id = current_user.get_id()
-        db.session.add(new_tasks)
-        db.session.commit()
-    return render_template('add_task.html', logged=current_user, form=form)
+    if current_user.is_anonymous():
+        form = extra_task()
+        if form.validate_on_submit():
+            task = form.task.data
+            new_tasks = AcTasks()
+            new_tasks.tasks = task
+            new_tasks.user_id = current_user.get_id()
+            db.session.add(new_tasks)
+            db.session.commit()
+        return render_template('add_task.html', logged=current_user, form=form)
+    return redirect(url_for('home'))
 
 
 @app.route('/view')
 def view():
-    tasks = AcTasks.query.filter_by(user_id=current_user.get_id())
-    count = 0
-    return render_template('view_tasks.html', logged=current_user, tasks=tasks, count=count)
+    if current_user.is_anonymous():
+        tasks = AcTasks.query.filter_by(user_id=current_user.get_id())
+        count = 0
+        return render_template('view_tasks.html', logged=current_user, tasks=tasks, count=count)
+    return redirect(url_for('home'))
 
 
 @app.route('/delete/<int:task_id>')
