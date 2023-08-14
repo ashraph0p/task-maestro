@@ -34,15 +34,6 @@ class AcTasks(db.Model):
     users = db.relationship('User', back_populates="tasks")
 
 
-class DiTasks(db.Model):
-    __tablename__ = "disabled_tasks"
-    id = db.Column(db.Integer, primary_key=True)
-    tasks = db.Column(db.String(250), primary_key=False)
-    tasks_id = db.Column(db.Integer, db.ForeignKey('active_tasks.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    users = db.relationship('User', back_populates="tasks")
-
-
 with app.app_context():
     db.create_all()
 
@@ -73,8 +64,16 @@ def add_task():
 @app.route('/view')
 def view():
     tasks = AcTasks.query.filter_by(user_id=current_user.get_id())
-    dis_tasks = DiTasks.query.filter_by(user_id=current_user.get_id())
-    return render_template('view_tasks.html', logged=current_user, tasks=tasks, dis_tasks=dis_tasks)
+    count = 0
+    return render_template('view_tasks.html', logged=current_user, tasks=tasks, count=count)
+
+
+@app.route('/delete/<int:task_id>')
+def delete(task_id):
+    task_delete = AcTasks.query.get(task_id)
+    db.session.delete(task_delete)
+    db.session.commit()
+    return redirect(url_for('view'))
 
 
 @app.route("/register", methods=['POST', 'GET'])

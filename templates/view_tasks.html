@@ -3,20 +3,24 @@
 {% block content %}
 <div class="container p-5">
     <div class="p-5">
-        {% for task in tasks %}
-
-        <div class="container row">
-            <li>
-                <ul style="list-style-type:none, padding:0">
-                    <button class="btn btn-primary"><i class="bi bi-square"></i></button>
-                    {{ task.tasks }}
-                </ul>
-            </li>
+        <div class="container">
+            <ol>
+                {% for task in tasks %}
+                <div class="row mx-5">
+                    <div class="col-10">
+                        <li>
+                            {{ task.tasks }}
+                        </li>
+                    </div>
+                    <div class="col-2">
+                        <a class="btn" href="{{ url_for('delete', task_id=task.id) }}" style="margin-left"><i
+                                class="bi bi-trash-fill"></i></a>
+                    </div>
+                </div>
+                <hr>
+                {% endfor %}
+            </ol>
         </div>
-        {% endfor %}
-        {% for task in dis_tasks %}
-        {{ task }}
-        {% endfor %}
     </div>
 </div>
 {% endblock %}
