@@ -1,0 +1,8 @@
+.offcanvas-header {
+    margin-top: 100%
+}
+.offcanvas-body, .offcanvas-header, .btn-close {
+    text-align: right;
+    justify-content: right;
+    align-items: right;
+}
