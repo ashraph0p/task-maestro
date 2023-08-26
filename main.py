@@ -50,7 +50,9 @@ def home():
 
 @app.route("/add", methods=['POST', 'GET'])
 def add_task():
-    if current_user.is_anonymous():
+    if current_user.is_anonymous:
+        return redirect(url_for('home'))
+    else:
         form = extra_task()
         if form.validate_on_submit():
             task = form.task.data
@@ -60,16 +62,16 @@ def add_task():
             db.session.add(new_tasks)
             db.session.commit()
         return render_template('add_task.html', logged=current_user, form=form)
-    return redirect(url_for('home'))
 
 
 @app.route('/view')
 def view():
-    if current_user.is_anonymous():
+    if current_user.is_anonymous:
+        return redirect(url_for('home'))
+    else:
         tasks = AcTasks.query.filter_by(user_id=current_user.get_id())
         count = 0
         return render_template('view_tasks.html', logged=current_user, tasks=tasks, count=count)
-    return redirect(url_for('home'))
 
 
 @app.route('/delete/<int:task_id>')
