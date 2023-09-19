@@ -6,3 +6,12 @@
     justify-content: right;
     align-items: right;
 }
+a {
+    margin: 0 2% 0 2%
+}
+body, .offcanvas {
+    background-color: #FFE4C4
+}
+hr {
+    color: black
+}
