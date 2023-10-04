@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 {% block content %}
 <div class="px-4 py-5 my-5 text-center">
@@ -8,14 +9,14 @@
         <hr>
         {% if not logged.is_authenticated: %}
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <a class="btn btn-warning btn-lg px-4 gap-3" href="/login">Login</a>
+            <a class="btn btn-secondary btn-lg px-4 gap-3" href="/login">Login</a>
             <a class="btn btn-outline-secondary btn-lg px-4" href="/register">Sign-Up</a>
         </div>
     </div>
     {% else %}
     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <a class="btn btn-warning btn-lg px-4 gap-3" href="/add">Add Tasks</a>
-        <a class="btn btn-outline-secondary btn-lg px-4" href="/view">View Tasks</a>
+        <a class="btn btn-primary btn-lg px-4 gap-3" href="/add">Add Tasks</a>
+        <a class="btn btn-outline-primary btn-lg px-4" href="/view">View Tasks</a>
     </div>
     {% endif %}
     {% endblock %}

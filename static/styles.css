@@ -9,9 +9,28 @@
 a {
     margin: 0 2% 0 2%
 }
-body, .offcanvas {
-    background-color: #FFE4C4
+.bg-note {
+    --bs-bg-opacity: 1;
+    background-color: #FFFA5C;
 }
-hr {
-    color: black
+.btn-primary {
+    --bs-btn-color: #000;
+    --bs-btn-bg: #ffbc00ab;
+    --bs-btn-border-color: #ffc107;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #ffa500;
+    --bs-btn-hover-border-color: #ffc107;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #ff9900;
+    --bs-btn-active-border-color: #ffbf00;
+}
+.btn-outline-primary {
+    --bs-btn-color: #000;
+    --bs-btn-border-color: #ffc107;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #ffa500;
+    --bs-btn-hover-border-color: #ffc107;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #ff9900;
+    --bs-btn-active-border-color: #ffbf00;
 }
