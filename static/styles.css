@@ -9,7 +9,7 @@
 a {
     margin: 0 2% 0 2%
 }
-p, h1, h2, h3, h4, h5, .navbar-brand, a, label, input, th, td, hr, .btn, option, select {
+p, h1, h2, h3, h4, h5, .navbar-brand, a, label, input, th, td, hr, .btn, option, select, li {
     font-family: 'Delicious Handrawn', cursive;
 }
 .bg-nav {
