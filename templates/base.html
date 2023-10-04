@@ -19,18 +19,16 @@
 </head>
 <body class="bg-note">
 {% block nav %}
-<nav aria-label="Offcanvas navbar large" class="navbar navbar-expand-lg bg-warning">
+<nav aria-label="Offcanvas navbar large" class="navbar navbar-expand-lg bg-nav">
     <div class="container-fluid">
             <a class="navbar-brand">
-                {% if not request.url == url_for('home') %}
-                <i class="bi bi-check2-square mx-auto mb-4"></i> Task Maestro
-                {% endif %}
+                <i class="bi bi-check2-square mx-auto mb-4"></i> TM
             </a>
         <button aria-controls="offcanvasNavbar2" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#offcanvasNavbar2"
                 data-bs-toggle="offcanvas" type="button">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div aria-labelledby="offcanvasNavbar2Label" class="bg-note offcanvas offcanvas-end" id="offcanvasNavbar2"
+        <div aria-labelledby="offcanvasNavbar2Label" class="bg-nav offcanvas offcanvas-end" id="offcanvasNavbar2"
              tabindex="-1">
             <div class="offcanvas-header">
                 <button aria-label="Close" class="btn-close btn-close-black" data-bs-dismiss="offcanvas"
@@ -45,6 +43,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/login">Login</a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="/register">Register</a>
                     </li>

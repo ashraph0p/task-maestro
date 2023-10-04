@@ -9,6 +9,9 @@
 a {
     margin: 0 2% 0 2%
 }
+.bg-nav {
+    background-color: #ffbc00ab
+}
 .bg-note {
     --bs-bg-opacity: 1;
     background-color: #FFFA5C;
